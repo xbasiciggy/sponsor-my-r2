@@ -1,6 +1,6 @@
 # R2 Sponsor Studio
 
-Egg-white sponsorship website with Rivian R2 photorealistic drag rotation, logo previews painted onto the real render frames, 40 curated placements, custom sizing, and a private organizer dashboard.
+Egg-white sponsorship website with Rivian R2 photorealistic drag rotation and place-anywhere logo previews painted onto the real render frames, priced by decal size, custom sizing, and a private organizer dashboard.
 
 ## Quick local preview
 
@@ -14,19 +14,11 @@ Open http://127.0.0.1:8788. This runs the actual application API with a local SQ
 
 Preview data lives in ignored `.local-data/`, separate from production. The server listens only on localhost. To change ports, set `PORT`. Run `npm test` for the validation suite.
 
-## Features and pricing
+## Placement and pricing
 
-| Tier | Count | One-time price | Total |
-|---|---:|---:|---:|
-| Hero | 8 | $5,000 | $40,000 |
-| Premium | 10 | $2,000 | $20,000 |
-| Standard | 12 | $1,000 | $12,000 |
-| Micro | 10 | $300 | $3,000 |
-| **Total** | **40** | | **$75,000** |
+Sponsors upload a logo, click anywhere on the silver painted body to place it, drag to move it and set its width; height follows the artwork's proportions. Paintable areas are the four doors, front fenders, rear quarters, rear hatch (below the light bar) and front fascia (between the headlights). Glass, lights, black cladding, black bumpers and wheel-arch trim are excluded, and a decal stays within one panel.
 
-Custom estimates use `max($300, round up to $50 ($150 + width_cm × height_cm × $0.95))`. The server recomputes every price and validates dimensions. Custom placements reserve the same physical panel space as curated placements, so they can make multiple fixed options unavailable. The $75,000 total is for the fixed catalog; custom substitutions can change the potential total. The goal remains $75,000.
-
-Paid amounts alone count toward progress. The UI caps the progress bar at 100%, while the amount and percentage can report overfunding. The vehicle/tax/wrap split is an organizer budget, not an official Rivian quote.
+Price is by decal size: `max($300, round up to $50 ($150 + width_cm × height_cm × $0.95))`. Examples: 15 × 8 cm badge $300, 60 × 15 cm strip $1,050, 50 × 35 cm logo $1,850, 100 × 55 cm full door $5,400. The server recomputes every price and validates the area. Reserved areas are shaded for other sponsors and overlapping applications are rejected. The funding goal remains $75,000; paid amounts alone count toward progress.
 
 ## Viewer and image provenance
 
@@ -128,7 +120,7 @@ For Cloudflare Pages Git integration: connect that repository, select framework 
 
 ## Verification
 
-`npm test` verifies catalog counts, exact funding math, geometric bounds, all 40 placements coexisting, server price authority, custom input validation, privacy, admin authentication, atomic conflict prevention, rejection/reopening and paid-progress accounting. Tests use the real SQL schema and real request handler with SQLite storage.
+`npm test` verifies painted-panel-only surfaces, size-based pricing, wheel-arch clearance, server price authority, custom input validation, privacy, admin authentication, atomic conflict prevention, rejection/reopening and paid-progress accounting. Tests use the real SQL schema and real request handler with SQLite storage.
 
 `npx wrangler pages functions build` verifies the Cloudflare Worker bundle. Manual browser checks include desktop, tablet and phone layout, logo upload, photo preview, custom sizing, view controls, application submission, reservation disabling, admin status changes and sign-out. See `VERIFICATION.md`.
 

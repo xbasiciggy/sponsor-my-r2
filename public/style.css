@@ -6,3 +6,5 @@
 @media(max-width:760px){.viewer-mode{left:16px;top:48px}#vehicle-real{margin-top:24px;height:300px}.viewer-wrap{min-height:440px}}
 
 .header-badge{display:block;width:100px;height:42px;object-fit:contain;flex-shrink:0}@media(max-width:760px){.header-badge{width:84px;height:36px}}
+
+.size-label{display:block;margin-top:22px}#vehicle-real.grab{cursor:grab}#vehicle-real.dragging{cursor:grabbing}.designer>.muted{font-size:12px;line-height:1.5;margin:-8px 0 0}
