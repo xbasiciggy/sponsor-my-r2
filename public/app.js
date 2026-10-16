@@ -3,7 +3,7 @@ import {createVehicle} from './viewer.js';
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 let image=null,logoData=null,occupied=[],live=false,sending=false,snapshot=null;
 // The sponsor picks the decal centre and width; height follows the artwork's proportions.
-let spot={panel:'driver-front',cx:56,cy:30},width=60,selected=null;
+let spot={panel:'driver-side',cx:152,cy:33},width=60,selected=null;
 const aspect=()=>image?image.width/image.height:2.5;
 const vehicle=createVehicle((panel,cx,cy)=>{spot={panel,cx,cy};update();});
 const examples=[['Badge',15,8],['Strip',60,15],['Panel logo',50,35],['Full door',100,55]];
@@ -17,7 +17,7 @@ function update(){
  selected=fit();$('w').value=width;$('w-val').textContent=`${selected.w} cm`;
  $('estimate').textContent=money(selected.price);$('size-note').textContent=`${selected.w} × ${selected.h} cm`;$('slot-detail').textContent=`On the ${selected.name.toLowerCase()} · ${selected.w} × ${selected.h} cm`;
  const p=panels.find(p=>p.id===selected.panel),conflict=occupied.some(o=>overlaps(selected,o)),arch=hitsCut(p,selected);
- $('conflict').textContent=conflict?'Another sponsor has reserved part of this area. Move or shrink your logo.':arch?'Your logo overlaps the wheel arch trim. Move it up or make it smaller.':'';$('apply').disabled=conflict||arch||!live;
+ $('conflict').textContent=conflict?'Another sponsor has reserved part of this area. Move or shrink your logo.':arch?'Your logo overlaps a wheel arch or trim. Move it or make it smaller.':'';$('apply').disabled=conflict||arch||!live;
  vehicle.update(selected,image,occupied);
 }
 $('w').oninput=()=>{width=+$('w').value;update();};

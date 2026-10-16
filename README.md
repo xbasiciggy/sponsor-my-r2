@@ -16,7 +16,9 @@ Preview data lives in ignored `.local-data/`, separate from production. The serv
 
 ## Placement and pricing
 
-Sponsors upload a logo, click anywhere on the silver painted body to place it, drag to move it and set its width; height follows the artwork's proportions. Paintable areas are the four doors, front fenders, rear quarters, rear hatch (below the light bar) and front fascia (between the headlights). Glass, lights, black cladding, black bumpers and wheel-arch trim are excluded, and a decal stays within one panel.
+Sponsors upload a logo, click anywhere on the silver painted body to place it, drag to move it and set its width; height follows the artwork's proportions. Paintable areas are each full side (front fender, both doors and rear quarter as one continuous surface, so artwork can run across the door gaps), the rear hatch (below the light bar) and the front fascia (between the headlights). Glass, lights, black cladding, black bumpers and wheel-arch trim are excluded; decals snap clear of the arches.
+
+The vehicle drives around Southern California daily and goes on regular road trips; the site copy says so.
 
 Price is by decal size: `max($300, round up to $50 ($150 + width_cm × height_cm × $0.95))`. Examples: 15 × 8 cm badge $300, 60 × 15 cm strip $1,050, 50 × 35 cm logo $1,850, 100 × 55 cm full door $5,400. The server recomputes every price and validates the area. Reserved areas are shaded for other sponsors and overlapping applications are rejected. The funding goal remains $75,000; paid amounts alone count toward progress.
 
