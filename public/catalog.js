@@ -21,7 +21,10 @@ for(const [label,s] of [['Driver',1],['Passenger',-1]])side(label.toLowerCase()+
  [[-2.05,-1.08,1.15,1.10],[1.04,2.15,1.15,1.10],[-2.05,-1.12,.72,.50],[1.10,2.15,.72,.50]]);
 // Rear hatch between the tail light bar and the black bumper; front fascia between the headlights.
 panel('hatch','Rear hatch',140,35,[2.345,1.155,.70],[0,0,-1],[0,-1,0],[1,0,0],32);
-panel('front-fascia','Front fascia',90,25,[-2.345,.99,-.45],[0,0,1],[0,-1,0],[-1,0,0],66);
+// Full-width fascia below the light bar, including the silver area under each headlight (headlights cut out).
+panel('front-fascia','Front fascia',170,27,[-2.345,.99,-.85],[0,0,1],[0,-1,0],[-1,0,0],66,[{rect:[18,0,19,14]},{rect:[133,0,19,14]}]);
+// Rear pillars: the silver panel between the rear door window and the rear quarter window.
+for(const [label,s] of [['Driver',1],['Passenger',-1]])panel(label.toLowerCase()+'-pillar',`${label} rear pillar`,24,40,[s>0?.98:1.22,1.58,s*.88],[s,0,0],[0,-1,0],[0,.3,s],s>0?14:50);
 // Retained so stored references stay valid; sponsorships are now placed freely and priced by size.
 export const slots=[];
 export function quote(p){return Math.max(300,Math.ceil((150+p.w*p.h*.95)/50)*50);}

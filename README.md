@@ -16,7 +16,7 @@ Preview data lives in ignored `.local-data/`, separate from production. The serv
 
 ## Placement and pricing
 
-Sponsors upload a logo, click anywhere on the silver painted body to place it, drag to move it and set its width; height follows the artwork's proportions. Paintable areas are each full side (front fender, both doors and rear quarter as one continuous surface, so artwork can run across the door gaps), the rear hatch (below the light bar) and the front fascia (between the headlights). Glass, lights, black cladding, black bumpers and wheel-arch trim are excluded; decals snap clear of the arches.
+Sponsors upload a logo, click anywhere on the silver painted body to place it, drag to move it and set its width; height follows the artwork's proportions. Paintable areas are each full side (front fender, both doors and rear quarter as one continuous surface, so artwork can run across the door gaps), the silver rear pillars between the rear door and quarter windows, the rear hatch (below the light bar) and the full-width front fascia below the light bar, including under the headlights. Glass, lights, black cladding, black bumpers and wheel-arch trim are excluded; decals snap clear of the arches.
 
 The vehicle drives around Southern California daily and goes on regular road trips; the site copy says so.
 
