@@ -2,11 +2,18 @@ name = "r2-sponsor-studio"
 compatibility_date = "2026-10-01"
 pages_build_output_dir = "public"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "r2-sponsors"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+# Storage bindings are off until the D1 database exists; the site still works
+# and the API answers "Applications are not connected yet". To turn them on:
+#   npx wrangler d1 create r2-sponsors
+#   npx wrangler r2 bucket create r2-sponsor-logos
+#   npx wrangler d1 execute r2-sponsors --remote --file=schema.sql
+# then uncomment below with the real database_id and push.
 
-[[r2_buckets]]
-binding = "LOGOS"
-bucket_name = "r2-sponsor-logos"
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "r2-sponsors"
+# database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# [[r2_buckets]]
+# binding = "LOGOS"
+# bucket_name = "r2-sponsor-logos"

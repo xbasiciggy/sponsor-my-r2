@@ -1,9 +1,7 @@
 name: Deploy to Cloudflare Pages
 
+# Cloudflare's Git integration deploys this repo now, so this only runs on demand.
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
 
 concurrency:
