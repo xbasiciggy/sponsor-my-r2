@@ -89,6 +89,20 @@ The Cloudflare local database is separate from the dependency-free preview datab
 
 Official deployment references: https://developers.cloudflare.com/pages/functions/bindings/ and https://developers.cloudflare.com/pages/functions/wrangler-configuration/
 
+## Automatic deploys (GitHub Actions)
+
+`.github/workflows/deploy.yml` deploys to Cloudflare Pages on every push to `main`, and posts a preview URL on every pull request. On its first run it creates the D1 database, private R2 bucket and Pages project if they don't exist, fills in the D1 ID, and applies `schema.sql`.
+
+Add these under **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | API token with **Cloudflare Pages: Edit**, **D1: Edit** and **Workers R2 Storage: Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | Your account ID (Cloudflare dashboard → Workers & Pages, right sidebar) |
+| `ADMIN_TOKEN` | Random string, 32+ characters (`openssl rand -hex 32`) for `/admin.html` |
+
+R2 must be enabled on the account once (dashboard → R2) before the bucket can be created. PR previews share the production D1/R2 bindings, so avoid submitting test applications from previews you don't want in the real dashboard.
+
 ## GitHub workflow
 
 Create an empty repository in your GitHub account and commit the contents of this folder (keep `public/`, `functions/`, schema, configuration and package files at repository root). `.gitignore` excludes secrets, dependencies and local test data.

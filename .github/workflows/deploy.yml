@@ -1,0 +1,110 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+env:
+  PROJECT_NAME: r2-sponsor-studio
+  D1_NAME: r2-sponsors
+  R2_BUCKET: r2-sponsor-logos
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Fork PRs don't get repository secrets, so they can't deploy.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Check Cloudflare secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      # Creates the D1 database, R2 bucket and Pages project on first run; reuses them after.
+      - name: Provision Cloudflare resources
+        run: |
+          set -euo pipefail
+          API="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          cf() { curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" "$@"; }
+
+          DB_ID=$(cf "$API/d1/database?name=$D1_NAME" | jq -r --arg n "$D1_NAME" '.result[]? | select(.name==$n) | .uuid' | head -1)
+          if [ -z "$DB_ID" ]; then
+            echo "Creating D1 database $D1_NAME"
+            DB_ID=$(cf -X POST "$API/d1/database" -d "{\"name\":\"$D1_NAME\"}" | jq -r '.result.uuid // empty')
+          fi
+          [ -n "$DB_ID" ] || { echo "::error::Could not find or create D1 database (check token has D1 Edit)"; exit 1; }
+          sed -i "s/REPLACE_WITH_D1_DATABASE_ID/$DB_ID/" wrangler.toml
+
+          if [ "$(cf -o /dev/null -w '%{http_code}' "$API/r2/buckets/$R2_BUCKET")" != "200" ]; then
+            echo "Creating R2 bucket $R2_BUCKET"
+            cf -X POST "$API/r2/buckets" -d "{\"name\":\"$R2_BUCKET\"}" | jq -e '.success' >/dev/null \
+              || { echo "::error::Could not create R2 bucket (enable R2 on the account and give the token R2 Edit)"; exit 1; }
+          fi
+
+          if [ "$(cf -o /dev/null -w '%{http_code}' "$API/pages/projects/$PROJECT_NAME")" != "200" ]; then
+            echo "Creating Pages project $PROJECT_NAME"
+            cf -X POST "$API/pages/projects" -d "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}" | jq -e '.success' >/dev/null \
+              || { echo "::error::Could not create Pages project"; exit 1; }
+          fi
+
+      # schema.sql only uses IF NOT EXISTS, so re-running it is safe.
+      - name: Apply database schema
+        if: github.event_name != 'pull_request'
+        run: npx wrangler d1 execute "$D1_NAME" --remote --file=schema.sql
+
+      - name: Set ADMIN_TOKEN
+        if: github.event_name != 'pull_request'
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then echo "::warning::ADMIN_TOKEN secret not set; /admin.html will stay locked."; exit 0; fi
+          printf '%s' "$ADMIN_TOKEN" | npx wrangler pages secret put ADMIN_TOKEN --project-name="$PROJECT_NAME"
+
+      - name: Deploy
+        id: deploy
+        run: |
+          set -euo pipefail
+          BRANCH="${{ github.head_ref || github.ref_name }}"
+          npx wrangler pages deploy public --project-name="$PROJECT_NAME" --branch="$BRANCH" \
+            --commit-hash="${{ github.event.pull_request.head.sha || github.sha }}" | tee deploy.log
+          URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.pages\.dev' deploy.log | tail -1)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "### Deployed: $URL" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- cf-pages-preview -->';
+            const body = `${marker}\n🚀 **Preview deployed:** ${{ steps.deploy.outputs.url }}\n\nCommit ${context.payload.pull_request.head.sha.slice(0, 7)}`;
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
