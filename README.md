@@ -1,6 +1,6 @@
 # R2 Sponsor Studio
 
-Egg-white sponsorship website with Rivian R2 photorealistic drag rotation, logo previews, an independent WebGL placement model, 40 curated placements, custom sizing, and a private organizer dashboard.
+Egg-white sponsorship website with Rivian R2 photorealistic drag rotation, logo previews painted onto the real render frames, 40 curated placements, custom sizing, and a private organizer dashboard.
 
 ## Quick local preview
 
@@ -38,7 +38,11 @@ Source image pattern: `https://media.rivian.com/image/upload/f_webp,q_85,w_1600/
 
 Rivian retains rights to the vehicle render imagery and marks. Public availability does not grant a redistribution license; this package does not grant one. Confirm the organizer’s rights/permission to publish these assets for the campaign before public release, or replace them with licensed renders while retaining the viewer. Attribution is included on the page. This is an independent project, with no claimed Rivian endorsement.
 
-The secondary **Placement model** is an original WebGL visualization for free rotation, tilt and top views. Its proportions use Rivian’s official published length 185.9 in, wheelbase 115.6 in, height 66.9 in, mirror-folded width 78.1 in, and 32-inch tire diameter (reference checked October 15, 2026). Its panel surfaces and camera alignment are approximations. Photo-view overlays are approximate projections, not official surface coordinates. Width/height are planning estimates; installer measurements, legal visibility requirements, glass/roof suitability, sensors, panel seams and final artwork must be reviewed before payment and production.
+### Placement calibration
+
+Placements are projected onto the photos with a camera fitted to the render sequence (wheel positions, bumper and hatch edges, and silhouette symmetry across all 72 frames). The sequence is not evenly spaced: frames 14–50 turn 5° each, while the front three-quarter range eases, so `public/viewer.js` keeps a per-frame heading table. Panel geometry in `public/catalog.js` follows the R2's measured door cut lines, beltline, cladding and wheel arches; side panels are oriented so logos read correctly on both sides, and custom placements cannot overlap a wheel arch. Logo previews take on the paint's shading and reflections from the render, and "Hide placements" gives a clean wrap-only preview.
+
+The roof and hood are not offered: the render camera sits about 4° above the vehicle, so neither can be previewed meaningfully. Glass placements (windshield banner, rear and quarter windows) assume perforated window film. Photo overlays remain approximate projections, not official surface coordinates. Width/height are planning estimates; installer measurements, legal visibility requirements (including windshield banner limits), sensors, panel seams and final artwork must be reviewed before payment and production.
 
 ## Cloudflare Pages deployment
 
@@ -130,7 +134,7 @@ For Cloudflare Pages Git integration: connect that repository, select framework 
 
 ## Files
 
-- `public/`: buildless website, viewer, original WebGL model and render assets.
+- `public/`: buildless website, calibrated photo viewer and render assets.
 - `functions/api/[[path]].js`: production Pages Functions API.
 - `schema.sql`: D1 schema and atomic geometry triggers.
 - `wrangler.toml`: production bindings, with your database ID to configure.

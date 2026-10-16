@@ -3,6 +3,6 @@
 .admin-shell h1{font-size:48px;letter-spacing:-2px}
 
 .viewer-mode{position:absolute;top:55px;left:25px;display:flex;gap:4px;z-index:1;background:#ffffff80;padding:4px;border-radius:5px}.viewer-mode button{border:0;border-radius:4px;background:transparent;color:var(--muted);font-size:10px;padding:7px 10px}.viewer-mode .active{background:var(--ink);color:var(--white)}.viewer-note{position:relative}#vehicle-real{cursor:grab}.viewer-wrap{background:radial-gradient(ellipse at 50% 30%,#fbfaf6,#eeeee5)}
-@media(max-width:760px){.viewer-mode{left:16px;top:48px}#vehicle-real,#vehicle{margin-top:60px;height:300px}.viewer-wrap{min-height:440px}}
+@media(max-width:760px){.viewer-mode{left:16px;top:48px}#vehicle-real{margin-top:24px;height:300px}.viewer-wrap{min-height:440px}}
 
 .header-badge{display:block;width:100px;height:42px;object-fit:contain;flex-shrink:0}@media(max-width:760px){.header-badge{width:84px;height:36px}}

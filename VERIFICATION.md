@@ -10,7 +10,7 @@
 - Marking all catalog applications paid yields $75,000; reversing paid status subtracts the amount.
 - Cloudflare Pages Functions compiled successfully with Wrangler 4.151.0.
 - Browser: desktop 1440 × 1000, tablet 768 × 1024, phone 390 × 844; no horizontal page overflow at these sizes.
-- Photorealistic rotation verified by dragging; view presets, logo upload/preview, custom range inputs and top-view WebGL model checked.
+- Photorealistic rotation verified by dragging; view presets, logo upload/preview (driver, passenger, front, rear and glass placements) and custom range inputs checked. Placement overlays checked against wheels, door cut lines and bumpers across the rotation.
 - Browser submission persisted a synthetic test application and disabled the occupied placement. Admin authentication, paid/rejected changes and sign-out were verified. Test records and local storage are excluded from the ZIP.
 - No browser console errors were observed in the tested flows.
 

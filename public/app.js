@@ -1,8 +1,8 @@
-import {slots,panels,TIERS,GOAL,quote,overlaps,validatePlacement} from './catalog.js';
+import {slots,panels,TIERS,GOAL,quote,overlaps,hitsCut,validatePlacement} from './catalog.js';
 import {createVehicle} from './viewer.js';
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 let custom=false,selected=slots[0],image=null,logoData=null,occupied=[],live=false,sending=false,snapshot=null;
-const vehicle=createVehicle($('vehicle'),s=>selectSlot(s));
+const vehicle=createVehicle(s=>selectSlot(s));
 $('slot-select').innerHTML=slots.map(s=>`<option value="${s.id}">${s.id} · ${s.name} · ${money(s.price)}</option>`).join('');
 $('panel').innerHTML=panels.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
 $('tier-cards').innerHTML=Object.entries(TIERS).map(([tier,t])=>`<button class="tier-card" data-tier="${tier}"><span class="tier-top"><span>${tier}</span><span>${slots.filter(s=>s.tier===tier).length} spots ↗</span></span><strong>${money(t.price)}</strong><small>One-time sponsorship</small></button>`).join('');
@@ -13,7 +13,7 @@ function update(){
  $('w-val').textContent=`${selected.w} cm`;$('h-val').textContent=`${selected.h} cm`;
  }
  $('estimate').textContent=money(selected.price);$('size-note').textContent=`${selected.w} × ${selected.h} cm`;$('slot-detail').textContent=`${selected.tier||'Custom'} placement · ${selected.w} × ${selected.h} cm`;
- const conflict=occupied.some(o=>overlaps(selected,o));$('conflict').textContent=conflict?'This area is reserved. Choose another spot or adjust your custom placement.':'';$('apply').disabled=conflict||!live;
+ const conflict=occupied.some(o=>overlaps(selected,o)),arch=custom&&hitsCut(panels.find(p=>p.id===selected.panel),selected);$('conflict').textContent=conflict?'This area is reserved. Choose another spot or adjust your custom placement.':arch?'This size overlaps the wheel arch. Move it up or make it smaller.':'';$('apply').disabled=conflict||arch||!live;
  vehicle.update(selected,image,occupied);
 }
 function selectSlot(s){custom=false;selected=s;$('slot-select').value=s.id;setMode(false);vehicle.focus(s);document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));}
@@ -28,7 +28,7 @@ $('logo').onchange=async()=>{
  const f=$('logo').files[0];if(!f)return;try{if(!['image/png','image/jpeg','image/webp'].includes(f.type)||f.size>5000000)throw Error('Choose a PNG, JPEG or WebP under 5 MB.');
  const bitmap=await createImageBitmap(f);if(bitmap.width>16000||bitmap.height>16000){bitmap.close();throw Error('Please use a smaller image.');}
  const c=document.createElement('canvas'),scale=Math.min(1,1024/Math.max(bitmap.width,bitmap.height));c.width=Math.round(bitmap.width*scale);c.height=Math.round(bitmap.height*scale);c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);bitmap.close();logoData=c.toDataURL('image/png');if(logoData.length>1333300)throw Error('The processed logo is too large. Please use simpler artwork.');
- image=await createImageBitmap(await (await fetch(logoData)).blob());$('remove-logo').hidden=false;update();
+ image=await createImageBitmap(c);$('remove-logo').hidden=false;update();
  }catch(e){logoData=null;image=null;$('logo').value='';$('remove-logo').hidden=true;update();$('conflict').textContent=e.message;}
 };
 $('remove-logo').onclick=()=>{image?.close();image=null;logoData=null;$('logo').value='';$('remove-logo').hidden=true;update();};
